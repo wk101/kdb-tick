@@ -1,3 +1,45 @@
+/-----------------------------------------------------------------------------
+/ tick.q - Real-time and historical feed handler for kdb+tick
+
+This script sets up a kdb+tick plant for real-time ingestion of market data
+via `.u.upd`, with optional historical replay and logging.
+
+Key Features:
+-------------
+- Publishes updates via `.u.upd` from incoming source or replay
+- Loads historical logs (`.u.ld`) and appends new data
+- Supports end-of-day logic (`.u.endofday`) and date rollovers
+- Handles corrupted log files with automatic truncation
+- Avoids duplicate data on overlapping subscription states
+- Converts timestamp granularity (2005 legacy -> nanosecond precision)
+
+Startup Usage:
+--------------
+    q tick.q SRC [DST] [-p 5010] [-o h]
+    e.g., q tick.q sym . -p 5001 </dev/null >foo 2>&1 &
+
+Components:
+-----------
+- `.u.ld`       : Load and validate a day's log file
+- `.u.tick`     : Initialize real-time or replay feed
+- `.u.endofday`: Close log file and increment day
+- `.u.ts`      : Handles end-of-day and pub resets
+- `.u.upd`     : Core pub-sub update function for inserting and publishing
+
+Changelog Highlights:
+---------------------
+- 2014.03.12: Removed license check
+- 2013.09.05: Warn on corrupt log
+- 2013.08.14: Allow <endofday> when -u is set
+- 2012.11.09: Use timestamp type (nanosecond `.z.P`) over old `.z.Z`
+- 2007–2011 : Many fixes to time rollover, log handling, and subscription edge cases
+
+Version:
+--------
+kdb+tick 2.8 2014.03.12
+
+-------------------------------------------------------------------------------
+
 / q tick.q sym . -p 5001 </dev/null >foo 2>&1 &
 /2014.03.12 remove license check
 /2013.09.05 warn on corrupt log
